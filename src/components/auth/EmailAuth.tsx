@@ -308,7 +308,8 @@ export default function EmailAuth({ onSuccess, onBack }: EmailAuthProps) {
   }
 
   return (
-    <Card className="w-full max-w-md mx-4">
+    <div className="h-screen flex items-start justify-center bg-white pt-8" style={{ height: '100vh', overflow: 'hidden' }}>
+      <Card className="w-full max-w-md mx-4">
       <CardHeader className="text-center">
         <div className="mb-4">
           <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-orange-500 rounded-full mx-auto flex items-center justify-center">
@@ -359,5 +360,6 @@ export default function EmailAuth({ onSuccess, onBack }: EmailAuthProps) {
         </Button>
       </CardContent>
     </Card>
+    </div>
   )
 }

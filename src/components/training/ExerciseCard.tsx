@@ -42,9 +42,9 @@ export default function ExerciseCard({ slot, onChoose }: Props) {
                 key={ex.id}
                 onClick={() => onChoose(ex.id)}
                 className={`flex-shrink-0 w-[280px] sm:w-[320px] md:w-[350px] lg:w-[380px] rounded-xl p-4 sm:p-5 text-left transition-all duration-300 ease-out transform hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
-                  ex.id === slot.currentExercise.id 
-                    ? 'bg-white shadow-xl ring-2 ring-blue-500 scale-[1.02] shadow-blue-100/50' 
-                    : 'bg-white/80 hover:bg-white shadow-md hover:shadow-lg'
+                  slot.selectedExercises.some(selected => selected.exercise.id === ex.id)
+                    ? 'bg-white shadow-xl border-2 border-blue-500 scale-[1.02] shadow-blue-100/50' 
+                    : 'bg-white/80 hover:bg-white shadow-md hover:shadow-lg border-2 border-transparent'
                 }`}
               >
                 <div className="flex items-start justify-between mb-2">

@@ -5,12 +5,18 @@ import { SLOT_TEMPLATES, recommendSets, filterExercisesByMuscles } from '@/data/
 import { Exercise, MuscleGroup, WorkoutType } from '@/lib/supabase'
 import { supabase } from '@/lib/supabase'
 
+export interface SelectedExercise {
+  exercise: Exercise
+  sets: number
+}
+
 export interface SlotState {
   id: string
   label: string
   alternatives: Exercise[]
-  currentExercise: Exercise
+  selectedExercises: SelectedExercise[]
   recommendedSets: number
+  totalSets: number
 }
 
 export interface WorkoutState {
@@ -29,6 +35,9 @@ interface WorkoutContextValue extends WorkoutState {
   setEquipment: (eq: string[]) => void
   regenerate: () => void
   chooseExercise: (slotId: string, exerciseId: string) => void
+  addExercise: (slotId: string, exerciseId: string) => void
+  removeExercise: (slotId: string, exerciseId: string) => void
+  updateExerciseSets: (slotId: string, exerciseId: string, sets: number) => void
   saveUserPreference: (exerciseId: string, rating: number) => Promise<void>
 }
 
@@ -53,12 +62,15 @@ const WorkoutContext = createContext<WorkoutContextValue | null>(null)
 function computeHeat(slots: SlotState[]): Record<MuscleGroup, number> {
   const heat: Record<MuscleGroup, number> = { ...DEFAULT_HEAT }
   slots.forEach((s) => {
-    const ex = s.currentExercise
-    ex.primary_muscles.forEach((m) => {
-      heat[m] = Math.min(1, (heat[m] || 0) + 0.35)
-    })
-    ;(ex.secondary_muscles || []).forEach((m) => {
-      heat[m] = Math.min(1, (heat[m] || 0) + 0.15)
+    s.selectedExercises.forEach((selected) => {
+      const ex = selected.exercise
+      const intensity = Math.min(1, selected.sets * 0.1) // More sets = more intensity
+      ex.primary_muscles.forEach((m) => {
+        heat[m] = Math.min(1, (heat[m] || 0) + (0.35 * intensity))
+      })
+      ;(ex.secondary_muscles || []).forEach((m) => {
+        heat[m] = Math.min(1, (heat[m] || 0) + (0.15 * intensity))
+      })
     })
   })
   return heat
@@ -75,13 +87,19 @@ function buildSlots(type: WorkoutType, duration: number, equipment: string[], ex
     const alternatives = filterExercisesByMuscles(t.muscles, equipment, exercises).sort(
       (a, b) => (b.preference_default || 0) - (a.preference_default || 0)
     )
-    const currentExercise = alternatives[0] || exercises[0]
+    const defaultExercise = alternatives[0] || exercises[0]
+    const selectedExercises: SelectedExercise[] = defaultExercise ? [{
+      exercise: defaultExercise,
+      sets: recSets
+    }] : []
+    
     return {
       id: `${t.id}_${i}`,
       label: t.label,
       alternatives,
-      currentExercise,
+      selectedExercises,
       recommendedSets: recSets,
+      totalSets: selectedExercises.reduce((sum, selected) => sum + selected.sets, 0),
     }
   })
 }
@@ -137,8 +155,71 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const chooseExercise = (slotId: string, exerciseId: string) => {
     setSlots((prev) => prev.map((s) => {
       if (s.id !== slotId) return s
-      const chosen = s.alternatives.find(a => a.id === exerciseId) || s.currentExercise
-      return { ...s, currentExercise: chosen }
+      const chosen = s.alternatives.find(a => a.id === exerciseId)
+      if (!chosen) return s
+      
+      // Replace all selected exercises with just this one
+      const selectedExercises = [{ exercise: chosen, sets: s.recommendedSets }]
+      return { 
+        ...s, 
+        selectedExercises,
+        totalSets: selectedExercises.reduce((sum, selected) => sum + selected.sets, 0)
+      }
+    }))
+  }
+
+  const addExercise = (slotId: string, exerciseId: string) => {
+    setSlots((prev) => prev.map((s) => {
+      if (s.id !== slotId) return s
+      const exercise = s.alternatives.find(a => a.id === exerciseId)
+      if (!exercise) return s
+      
+      // Check if exercise is already selected
+      const isAlreadySelected = s.selectedExercises.some(selected => selected.exercise.id === exerciseId)
+      if (isAlreadySelected) return s
+      
+      const newSelectedExercise = { exercise, sets: s.recommendedSets }
+      const selectedExercises = [...s.selectedExercises, newSelectedExercise]
+      return { 
+        ...s, 
+        selectedExercises,
+        totalSets: selectedExercises.reduce((sum, selected) => sum + selected.sets, 0)
+      }
+    }))
+  }
+
+  const removeExercise = (slotId: string, exerciseId: string) => {
+    setSlots((prev) => prev.map((s) => {
+      if (s.id !== slotId) return s
+      const selectedExercises = s.selectedExercises.filter(selected => selected.exercise.id !== exerciseId)
+      
+      // If no exercises left, add the first alternative
+      if (selectedExercises.length === 0 && s.alternatives.length > 0) {
+        const defaultExercise = { exercise: s.alternatives[0], sets: s.recommendedSets }
+        selectedExercises.push(defaultExercise)
+      }
+      
+      return { 
+        ...s, 
+        selectedExercises,
+        totalSets: selectedExercises.reduce((sum, selected) => sum + selected.sets, 0)
+      }
+    }))
+  }
+
+  const updateExerciseSets = (slotId: string, exerciseId: string, sets: number) => {
+    setSlots((prev) => prev.map((s) => {
+      if (s.id !== slotId) return s
+      const selectedExercises = s.selectedExercises.map(selected => 
+        selected.exercise.id === exerciseId 
+          ? { ...selected, sets: Math.max(1, Math.min(5, sets)) } // Clamp between 1-5
+          : selected
+      )
+      return { 
+        ...s, 
+        selectedExercises,
+        totalSets: selectedExercises.reduce((sum, selected) => sum + selected.sets, 0)
+      }
     }))
   }
 
@@ -186,6 +267,9 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setEquipment,
     regenerate,
     chooseExercise,
+    addExercise,
+    removeExercise,
+    updateExerciseSets,
     saveUserPreference,
   }
 

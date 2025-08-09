@@ -67,8 +67,10 @@ export default function Home() {
               smart exercise swaps, and a live muscle coverage heat map.
             </p>
           </header>
-          <section className="mx-auto grid max-w-6xl gap-6 px-4 pb-20">
-            <MainContent />
+          <section className="mx-auto max-w-6xl px-4 pb-20 w-full">
+            <div className="space-y-6 w-full max-w-full">
+              <MainContent />
+            </div>
           </section>
         </main>
       </WorkoutProvider>

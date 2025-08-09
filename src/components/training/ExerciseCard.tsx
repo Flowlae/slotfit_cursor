@@ -13,60 +13,63 @@ interface Props {
 }
 
 export default function ExerciseCard({ slot, onChoose }: Props) {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ dragFree: true, containScroll: 'trimSnaps' })
+  const [emblaRef, emblaApi] = useEmblaCarousel({ 
+    dragFree: true, 
+    containScroll: 'trimSnaps',
+    slidesToScroll: 1,
+    align: 'start'
+  })
 
   const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi])
   const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi])
 
   return (
-    <Card className="h-full">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-base">{slot.label}</CardTitle>
-        <div className="text-xs text-muted-foreground">
+    <div className="w-full max-w-full">
+      {/* Category Header */}
+      <div className="mb-4 flex items-center justify-between">
+        <h3 className="text-lg sm:text-xl font-bold text-gray-900">{slot.label}</h3>
+        <div className="text-xs sm:text-sm text-muted-foreground">
           {slot.recommendedSets} sets • {slot.alternatives.length} options
         </div>
-      </CardHeader>
-      <CardContent>        <p className="mb-3 text-sm text-muted-foreground">
-          Choose one {slot.label} exercise ({slot.alternatives.length} options)
-        </p>
-        <div className="relative">
-          <div className="overflow-hidden" ref={emblaRef}>
-            <div className="flex gap-4">
-              {slot.alternatives.map((ex) => (
-                <button
-                  key={ex.id}
-                  onClick={() => onChoose(ex.id)}
-                  className={`shrink-0 w-[260px] rounded-lg border p-4 text-left transition hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                    ex.id === slot.currentExercise.id ? 'ring-2 ring-ring' : ''
-                  }`}
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="font-medium">{ex.name}</div>
-                    <Info className="text-muted-foreground h-4 w-4" aria-hidden aria-label="Exercise info" />
-                  </div>
-                  <div className="mt-2 text-xs text-muted-foreground">
-                    {ex.instruction_text}
-                  </div>
-                  <div className="mt-3 flex flex-wrap gap-1 text-[10px] text-muted-foreground">
-                    {ex.primary_muscles.map((m) => (
-                      <span key={m} className="rounded-full border px-2 py-0.5">{m}</span>
-                    ))}
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>          <div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-background to-transparent" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-background to-transparent" />
+      </div>
+      
+      {/* iPhone-style Carousel */}
+      <div className="relative bg-gray-100/50 rounded-2xl p-4 sm:p-6 overflow-hidden">
+        <div className="overflow-hidden" ref={emblaRef}>
+          <div className="flex gap-3 sm:gap-4 px-1 sm:px-2">
+            {slot.alternatives.map((ex) => (
+              <button
+                key={ex.id}
+                onClick={() => onChoose(ex.id)}
+                className={`flex-shrink-0 w-[280px] sm:w-[320px] md:w-[350px] lg:w-[380px] rounded-xl p-4 sm:p-5 text-left transition-all duration-300 ease-out transform hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
+                  ex.id === slot.currentExercise.id 
+                    ? 'bg-white shadow-xl ring-2 ring-blue-500 scale-[1.02] shadow-blue-100/50' 
+                    : 'bg-white/80 hover:bg-white shadow-md hover:shadow-lg'
+                }`}
+              >
+                <div className="flex items-start justify-between mb-2">
+                  <div className="font-semibold text-sm sm:text-base leading-tight pr-2">{ex.name}</div>
+                  <Info className="text-gray-400 h-4 w-4 flex-shrink-0 opacity-60" />
+                </div>
+                <div className="text-xs text-gray-600 mb-3 line-clamp-2 leading-relaxed">
+                  {ex.instruction_text}
+                </div>
+                <div className="flex flex-wrap gap-1">
+                  {ex.primary_muscles.map((m) => (
+                    <span key={m} className="text-[10px] sm:text-[11px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium capitalize">
+                      {m}
+                    </span>
+                  ))}
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
-        <div className="mt-3 flex justify-between">
-          <Button variant="secondary" size="sm" onClick={scrollPrev}>
-            Prev
-          </Button>
-          <Button variant="secondary" size="sm" onClick={scrollNext}>
-            Next
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+        
+        {/* Fade edges like iPhone camera */}
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-gray-100/50 via-gray-100/30 to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-gray-100/50 via-gray-100/30 to-transparent" />
+      </div>
+    </div>
   )
 }

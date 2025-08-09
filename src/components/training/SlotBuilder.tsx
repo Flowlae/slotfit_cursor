@@ -7,13 +7,14 @@ export default function SlotBuilder() {
   const { slots, chooseExercise } = useWorkout()
 
   return (
-    <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <section className="space-y-6 sm:space-y-8 w-full max-w-full">
       {slots.map((slot) => (
-        <ExerciseCard 
-          key={slot.id} 
-          slot={slot} 
-          onChoose={(id) => chooseExercise(slot.id, id)} 
-        />
+        <div key={slot.id} className="w-full">
+          <ExerciseCard 
+            slot={slot} 
+            onChoose={(id) => chooseExercise(slot.id, id)} 
+          />
+        </div>
       ))}
     </section>
   )

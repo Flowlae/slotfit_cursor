@@ -4,10 +4,12 @@ import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import EmailAuth from './EmailAuth'
 
 export default function LoginPage({ onLogin }: { onLogin: () => void }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [authMode, setAuthMode] = useState<'google' | 'email'>('google')
 
   const handleGoogleLogin = async () => {
     try {
@@ -32,10 +34,24 @@ export default function LoginPage({ onLogin }: { onLogin: () => void }) {
     }
   }
 
+  if (authMode === 'email') {
+    return (
+      <EmailAuth 
+        onSuccess={onLogin}
+        onBack={() => setAuthMode('google')}
+      />
+    )
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-orange-50">
       <Card className="w-full max-w-md mx-4">
         <CardHeader className="text-center">
+          <div className="mb-4">
+            <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-orange-500 rounded-full mx-auto flex items-center justify-center">
+              <span className="text-white text-2xl font-bold">S</span>
+            </div>
+          </div>
           <CardTitle className="text-3xl font-bold text-gray-900">
             Welcome to SlotFit
           </CardTitle>
@@ -66,6 +82,23 @@ export default function LoginPage({ onLogin }: { onLogin: () => void }) {
               </div>
             )}
           </Button>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-2 text-gray-500">Or</span>
+            </div>
+          </div>
+
+          <Button
+            onClick={() => setAuthMode('email')}
+            variant="outline"
+            className="w-full h-12 text-lg font-medium"
+          >
+            Continue with Email
+          </Button>
           
           {error && (
             <div className="text-red-600 text-sm text-center p-3 bg-red-50 rounded-md">
@@ -74,7 +107,8 @@ export default function LoginPage({ onLogin }: { onLogin: () => void }) {
           )}
           
           <div className="text-center text-sm text-gray-500">
-            By continuing, you agree to our Terms of Service and Privacy Policy
+            <p>By continuing, you agree to our Terms of Service and Privacy Policy</p>
+            <p className="mt-2 text-xs">Powered by Supabase • Secure & Private</p>
           </div>
         </CardContent>
       </Card>

@@ -1,12 +1,19 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import EmailAuth from './EmailAuth'
 
 export default function LoginPage({ onLogin }: { onLogin: () => void }) {
+  // Prevent body scrolling
+  React.useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, []);
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [authMode, setAuthMode] = useState<'google' | 'email'>('google')
@@ -44,26 +51,26 @@ export default function LoginPage({ onLogin }: { onLogin: () => void }) {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-orange-50">
+    <div className="h-screen flex items-start justify-center bg-white pt-8" style={{ height: '100vh', overflow: 'hidden' }}>
       <Card className="w-full max-w-md mx-4">
-        <CardHeader className="text-center">
-          <div className="mb-4">
-            <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-orange-500 rounded-full mx-auto flex items-center justify-center">
-              <span className="text-white text-2xl font-bold">S</span>
+        <CardHeader className="text-center pb-3">
+          <div className="mb-2">
+            <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-orange-500 rounded-full mx-auto flex items-center justify-center">
+              <span className="text-white text-xl font-bold">S</span>
             </div>
           </div>
-          <CardTitle className="text-3xl font-bold text-gray-900">
+          <CardTitle className="text-2xl font-bold text-gray-900">
             Welcome to SlotFit
           </CardTitle>
-          <CardDescription className="text-lg text-gray-600">
+          <CardDescription className="text-sm text-gray-600">
             Your adaptive strength training companion
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3 pb-4">
           <Button
             onClick={handleGoogleLogin}
             disabled={loading}
-            className="w-full h-12 text-lg font-medium bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
+            className="w-full h-10 text-base font-medium bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
           >
             {loading ? (
               <div className="flex items-center space-x-2">
@@ -95,7 +102,7 @@ export default function LoginPage({ onLogin }: { onLogin: () => void }) {
           <Button
             onClick={() => setAuthMode('email')}
             variant="outline"
-            className="w-full h-12 text-lg font-medium"
+            className="w-full h-10 text-base font-medium"
           >
             Continue with Email
           </Button>
@@ -106,9 +113,9 @@ export default function LoginPage({ onLogin }: { onLogin: () => void }) {
             </div>
           )}
           
-          <div className="text-center text-sm text-gray-500">
+          <div className="text-center text-xs text-gray-500">
             <p>By continuing, you agree to our Terms of Service and Privacy Policy</p>
-            <p className="mt-2 text-xs">Powered by Supabase • Secure & Private</p>
+            <p className="mt-1">Powered by Supabase • Secure & Private</p>
           </div>
         </CardContent>
       </Card>

@@ -87,11 +87,8 @@ function buildSlots(type: WorkoutType, duration: number, equipment: string[], ex
     const alternatives = filterExercisesByMuscles(t.muscles, equipment, exercises).sort(
       (a, b) => (b.preference_default || 0) - (a.preference_default || 0)
     )
-    const defaultExercise = alternatives[0] || exercises[0]
-    const selectedExercises: SelectedExercise[] = defaultExercise ? [{
-      exercise: defaultExercise,
-      sets: recSets
-    }] : []
+    // Start with empty muscle groups - no default exercise
+    const selectedExercises: SelectedExercise[] = []
     
     return {
       id: `${t.id}_${i}`,
@@ -193,12 +190,7 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
       if (s.id !== slotId) return s
       const selectedExercises = s.selectedExercises.filter(selected => selected.exercise.id !== exerciseId)
       
-      // If no exercises left, add the first alternative
-      if (selectedExercises.length === 0 && s.alternatives.length > 0) {
-        const defaultExercise = { exercise: s.alternatives[0], sets: s.recommendedSets }
-        selectedExercises.push(defaultExercise)
-      }
-      
+      // Allow completely empty muscle groups - no default exercise added
       return { 
         ...s, 
         selectedExercises,

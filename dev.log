@@ -1,0 +1,15 @@
+
+> slotfit@0.1.0 dev
+> next dev
+
+  ▲ Next.js 14.2.31
+  - Local:        http://localhost:3000
+  - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 1190ms
+ ○ Compiling / ...
+ ✓ Compiled / in 1194ms (825 modules)
+ HEAD / 200 in 1327ms
+ ✓ Compiled in 128ms (419 modules)
+ GET / 200 in 36ms

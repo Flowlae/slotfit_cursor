@@ -41,13 +41,16 @@ export default function EnhancedExerciseCard({ slot, onChoose, onAdd, onRemove, 
         <div>
           <h3 className="text-lg sm:text-xl font-bold text-gray-900">{slot.label}</h3>
           <div className="text-xs sm:text-sm text-muted-foreground">
-            {slot.alternatives.length} options
+            {slot.selectedExercises.length > 0 
+              ? `${slot.selectedExercises.length} selected • ${slot.totalSets} sets`
+              : `${slot.alternatives.length} options available`
+            }
           </div>
         </div>
       </div>
       
       {/* Summary View of Selected Exercises */}
-      {slot.selectedExercises.length > 0 && (
+      {slot.selectedExercises.length > 0 ? (
         <div className="mb-4 bg-blue-50 rounded-lg p-4 transition-all duration-300">
           <h4 className="text-sm font-semibold text-gray-700 mb-2">Selected Exercises:</h4>
           <div className="space-y-1">
@@ -65,6 +68,13 @@ export default function EnhancedExerciseCard({ slot, onChoose, onAdd, onRemove, 
             </div>
           </div>
         </div>
+      ) : (
+        <div className="mb-4 bg-gray-50 rounded-lg p-4 transition-all duration-300">
+          <div className="text-center text-sm text-gray-600">
+            <p>No exercises selected for {slot.label}</p>
+            <p className="text-xs mt-1">Click on exercises below to add them to your workout</p>
+          </div>
+        </div>
       )}
       
       {/* Exercise Selection Carousel */}
@@ -78,28 +88,20 @@ export default function EnhancedExerciseCard({ slot, onChoose, onAdd, onRemove, 
               return (
                 <div
                   key={ex.id}
-                  className={`flex-shrink-0 w-[280px] sm:w-[320px] md:w-[350px] lg:w-[380px] rounded-xl p-4 sm:p-5 transition-all duration-300 ease-in-out transform hover:scale-[1.02] focus-visible:outline-none cursor-pointer relative ${
+                  className={`flex-shrink-0 w-[280px] sm:w-[320px] md:w-[350px] lg:w-[380px] rounded-[14px] transition-all duration-300 ease-in-out cursor-pointer p-4 sm:p-5 relative ${
                     isSelected 
-                      ? 'bg-white shadow-xl scale-[1.02] shadow-red-100/50' 
-                      : 'bg-white/80 hover:bg-white shadow-md hover:shadow-lg border border-gray-200'
+                      ? 'bg-white shadow-2xl' 
+                      : 'bg-white/80 hover:bg-white shadow-md hover:shadow-xl'
                   }`}
-                  style={isSelected ? {
-                    background: 'white',
-                    position: 'relative'
-                  } : {}}
                   onClick={() => isSelected ? onRemove(ex.id) : onAdd(ex.id)}
                 >
                   {isSelected && (
                     <div 
-                      className="absolute rounded-xl pointer-events-none"
+                      className="absolute inset-0 rounded-[14px] pointer-events-none"
                       style={{
-                        top: '0',
-                        left: '0',
-                        right: '0',
-                        bottom: '0',
-                        border: '3px solid #ef4444',
-                        borderRadius: '12px',
-                        zIndex: 1
+                        background: 'transparent',
+                        border: '2.5px solid #dc2626',
+                        WebkitMaskImage: '-webkit-radial-gradient(white, black)',
                       }}
                     />
                   )}

@@ -26,6 +26,15 @@ export const EXERCISES: Exercise[] = [
   { id: 'seated_leg_curl', name: 'Seated Leg Curl', movement_pattern: 'elbow_flexion', primary_muscles: ['hamstrings'], equipment_needed: ['machine'], difficulty_level: 'beginner', instruction_text: 'Sit with back against pad, curl weight by bending knees, squeeze hamstrings at peak contraction.', preference_default: 7 },
   { id: 'lying_leg_curl', name: 'Lying Leg Curl', movement_pattern: 'elbow_flexion', primary_muscles: ['hamstrings'], equipment_needed: ['machine'], difficulty_level: 'beginner', instruction_text: 'Lie face down, curl weight by bending knees, keep hips pressed into bench throughout movement.', preference_default: 7 },
   { id: 'romanian_deadlift', name: 'Romanian Deadlift', movement_pattern: 'hinge', primary_muscles: ['hamstrings'], secondary_muscles: ['glutes', 'back'], equipment_needed: ['barbell'], difficulty_level: 'intermediate', instruction_text: 'Hinge at hips, slide bar down legs, feel stretch in hamstrings, drive hips forward to stand.', preference_default: 8 },
+
+  // Quad exercises
+  { id: 'squat', name: 'Barbell Squat', movement_pattern: 'squat', primary_muscles: ['quads'], secondary_muscles: ['glutes', 'hamstrings', 'core'], equipment_needed: ['barbell'], difficulty_level: 'intermediate', instruction_text: 'Feet shoulder-width, bar on upper back, squat down until thighs are parallel to ground.', preference_default: 9 },
+  { id: 'leg_press', name: 'Leg Press', movement_pattern: 'squat', primary_muscles: ['quads'], secondary_muscles: ['glutes', 'hamstrings'], equipment_needed: ['machine'], difficulty_level: 'beginner', instruction_text: 'Feet shoulder-width on platform, press through heels, don\'t lock knees at top.', preference_default: 7 },
+  { id: 'leg_extension', name: 'Leg Extension', movement_pattern: 'squat', primary_muscles: ['quads'], equipment_needed: ['machine'], difficulty_level: 'beginner', instruction_text: 'Sit with back against pad, extend knees to lift weight, squeeze quads at top.', preference_default: 6 },
+
+  // Core exercises
+  { id: 'plank', name: 'Plank', movement_pattern: 'core', primary_muscles: ['core'], equipment_needed: [], difficulty_level: 'beginner', instruction_text: 'Hold body in straight line from head to heels, engage core muscles.', preference_default: 6 },
+  { id: 'crunches', name: 'Crunches', movement_pattern: 'core', primary_muscles: ['core'], equipment_needed: [], difficulty_level: 'beginner', instruction_text: 'Lie on back, knees bent, lift shoulders off ground using core muscles.', preference_default: 5 },
 ]
 
 export const SLOT_TEMPLATES: Record<WorkoutType, { id: string; label: string; muscles: MuscleGroup[] }[]> = {
@@ -61,9 +70,9 @@ export const recommendSets = (duration: number) => {
   if (duration >= 60) return 3
   return 2
 }
-export function filterExercisesByMuscles(muscles: MuscleGroup[], equipment: string[] = []): Exercise[] {
-  const primary = EXERCISES.filter(e => e.primary_muscles.some(m => muscles.includes(m)))
-  const secondary = EXERCISES.filter(e => !primary.includes(e) && (e.secondary_muscles || []).some(m => muscles.includes(m)))
+export function filterExercisesByMuscles(muscles: MuscleGroup[], equipment: string[] = [], exercises: Exercise[] = EXERCISES): Exercise[] {
+  const primary = exercises.filter(e => e.primary_muscles.some(m => muscles.includes(m)))
+  const secondary = exercises.filter(e => !primary.includes(e) && (e.secondary_muscles || []).some(m => muscles.includes(m)))
   const list = [...primary, ...secondary]
   if (!equipment.length) return list
   return list.filter(e => e.equipment_needed.every(eq => equipment.includes(eq) || eq === 'machine'))

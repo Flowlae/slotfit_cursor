@@ -21,6 +21,11 @@ export const EXERCISES: Exercise[] = [
   { id: 'lateral_raise', name: 'DB Lateral Raise', movement_pattern: 'vertical_push', primary_muscles: ['shoulders'], equipment_needed: ['dumbbells'], difficulty_level: 'beginner', instruction_text: 'Soft elbows, raise to shoulder height, lead with elbows.', preference_default: 6 },
   { id: 'rear_delt_fly', name: 'Rear Delt Fly', movement_pattern: 'horizontal_pull', primary_muscles: ['shoulders','back'], equipment_needed: ['dumbbells'], difficulty_level: 'beginner', instruction_text: 'Hinge forward, open arms wide, squeeze rear delts.', preference_default: 6 },
   { id: 'arnold_press', name: 'Arnold Press', movement_pattern: 'vertical_push', primary_muscles: ['shoulders'], secondary_muscles: ['triceps'], equipment_needed: ['dumbbells'], difficulty_level: 'intermediate', instruction_text: 'Rotate palms from facing you to away as you press.', preference_default: 6 },
+
+  // Hamstrings
+  { id: 'seated_leg_curl', name: 'Seated Leg Curl', movement_pattern: 'elbow_flexion', primary_muscles: ['hamstrings'], equipment_needed: ['machine'], difficulty_level: 'beginner', instruction_text: 'Sit with back against pad, curl weight by bending knees, squeeze hamstrings at peak contraction.', preference_default: 7 },
+  { id: 'lying_leg_curl', name: 'Lying Leg Curl', movement_pattern: 'elbow_flexion', primary_muscles: ['hamstrings'], equipment_needed: ['machine'], difficulty_level: 'beginner', instruction_text: 'Lie face down, curl weight by bending knees, keep hips pressed into bench throughout movement.', preference_default: 7 },
+  { id: 'romanian_deadlift', name: 'Romanian Deadlift', movement_pattern: 'hinge', primary_muscles: ['hamstrings'], secondary_muscles: ['glutes', 'back'], equipment_needed: ['barbell'], difficulty_level: 'intermediate', instruction_text: 'Hinge at hips, slide bar down legs, feel stretch in hamstrings, drive hips forward to stand.', preference_default: 8 },
 ]
 
 export const SLOT_TEMPLATES: Record<WorkoutType, { id: string; label: string; muscles: MuscleGroup[] }[]> = {
